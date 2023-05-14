@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -24,6 +24,8 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+
+import notifee, {AndroidColor} from '@notifee/react-native';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -61,6 +63,26 @@ function App(): JSX.Element {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  useEffect(() => {
+    const channelId = notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+    });
+
+    channelId.then(id => {
+      notifee.displayNotification({
+        title: 'Foreground service',
+        body: 'This notification will exist for the lifetime of the service runner',
+        android: {
+          channelId: id,
+          asForegroundService: true,
+          color: AndroidColor.BLUE,
+          colorized: true,
+        },
+      });
+    });
+  }, []);
 
   return (
     <SafeAreaView style={backgroundStyle}>
